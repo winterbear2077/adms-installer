@@ -8,22 +8,22 @@ function App() {
     {
       title: "1",
       description: "Description for Card 1",
-      barcolor: "#FF5733",
+      barcolor: "#6C9BEF",
     },
     {
       title: "2",
       description: "Description for Card 2",
-      barcolor: "#33FF57",
+      barcolor: "#82C8A3",
     },
     {
       title: "3",
       description: "Description for Card 3",
-      barcolor: "#3357FF",
+      barcolor: "#F0C987",
     },
     {
       title: "4",
       description: "Description for Card 4",
-      barcolor: "#F1C40F",
+      barcolor: "#D4A5A5",
     },
   ]
 
