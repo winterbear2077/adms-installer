@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import { Box, Typography, Stepper, Step, StepLabel, StepContent, Button, Card, CardContent } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Stepper, Step, StepLabel, Button, Card, CardContent, Divider } from '@mui/material';
 import BasicPage from './BasicPage';
+import { useNavigate } from 'react-router-dom';
+import BasicInput from './BasicInput';
+import { BasicInputProps } from './BasicInput';
 
-const steps = [
-    'Introduction',
-    'End user license agreement',
-    'vCenter Server deployment target',
-    'Set up vCenter Server VM',
-    'Select deployment size',
-    'Select datastore',
-    'Configure network settings',
-    'Ready to complete stage 1',
-];
 
-function SPage() {
+export interface StepInfo {
+    stepName: string,
+    description: string,
+    formInfo: Array<BasicInputProps>,
+    additionalInput?: React.ReactNode
+}
+
+function SidePage({ steps }: { steps: Array<StepInfo> }) {
     const [activeStep, setActiveStep] = useState(0);
+    const navigate = useNavigate();
 
     const handleNext = () => {
         setActiveStep((prevStep) => prevStep + 1);
@@ -24,6 +25,11 @@ function SPage() {
         setActiveStep((prevStep) => prevStep - 1);
     };
 
+    const handleCancle = () => {
+        navigate("/");
+    }
+
+
     return (
         <BasicPage>
             {/* Main Content */}
@@ -31,48 +37,69 @@ function SPage() {
                 {/* Stepper (Left side) */}
                 <Box sx={{ width: '30%', paddingRight: 2 }}>
                     <Stepper activeStep={activeStep} orientation="vertical">
-                        {steps.map((label, index) => (
+                        {steps.map((info, index) => (
                             <Step key={index}>
-                                <StepLabel>{label}</StepLabel>
-                                <StepContent>
-                                    {/* Here we can put additional content for each step if needed */}
-                                </StepContent>
+                                <StepLabel>{info.stepName}</StepLabel>
                             </Step>
                         ))}
                     </Stepper>
                 </Box>
 
                 {/* Content (Right side) */}
-                <Box sx={{ width: '70%' }}>
-                    <Card sx={{ padding: 2 }}>
+                <Box sx={{ width: '70%', height: '80%', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+                    <Card sx={{ padding: 2, marginBottom: 2 }}
+                        elevation={0}>
                         <CardContent>
                             <Typography variant="h6" gutterBottom>
-                                Step {activeStep + 1}: {steps[activeStep]}
+                                {steps[activeStep].stepName}
                             </Typography>
                             <Typography variant="body1" color="textSecondary">
-                                {/* You can put specific form elements or details for each step here */}
-                                This section will contain the details for the current step, including forms or
-                                information you need to fill out.
+                                {steps[activeStep].description}
                             </Typography>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Button
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    variant="outlined"
-                                    color="primary"
-                                >
-                                    Back
-                                </Button>
-                                <Button onClick={handleNext} variant="contained" color="primary">
-                                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                                </Button>
-                            </Box>
                         </CardContent>
                     </Card>
+
+                    <Divider sx={{ marginBottom: 5 }} />
+                    {/* 表单区（带滚动条） */}
+                    <Box sx={{ flex: 1, overflowY: 'auto', marginBottom: 2, marginRight: 8 }}>
+                        <Card sx={{ padding: 2 }}
+                            elevation={0}>
+                            {steps[activeStep].additionalInput}
+                            {
+                                steps[activeStep].formInfo.map((inputProps, key) => (
+                                    <BasicInput inputProps={inputProps} key={key} />
+                                ))
+                            }
+                        </Card>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'right', gap: 2 }}>
+                        <Button
+                            onClick={handleCancle}
+                            color="primary"
+                        >
+                            Cancle
+                        </Button>
+                        <Button
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                            variant="outlined"
+                            color="primary"
+                        >
+                            Back
+                        </Button>
+                        <Button
+                            onClick={handleNext}
+                            variant="contained"
+                            color="primary"
+                            disabled={activeStep === steps.length}
+                        >
+                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                        </Button>
+                    </Box>
                 </Box>
             </Box>
-        </BasicPage>
+        </BasicPage >
     );
 }
 
-export default SPage;
+export default SidePage;
