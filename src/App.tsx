@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
+import InstallPage from "./pages/InstallPage";
 import HomePage from "./pages/MainPage";
-import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
-import SPage from "./components/SideStepper";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   const cards = [
@@ -33,7 +31,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage cards={cards} />} />
-      <Route path="/step/" element={<SPage />} />
+      <Route path="/step/" element={<InstallPage />} />
     </Routes>
   );
 }

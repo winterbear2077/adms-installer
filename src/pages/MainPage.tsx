@@ -1,4 +1,4 @@
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { CardItemProps } from '../components/CardItem';
 import CardItem from '../components/CardItem';
 import BasicPage from '../components/BasicPage';
@@ -23,8 +23,8 @@ function HomePage({ cards }: { cards: CardItemProps[] }) {
             marginBottom='64px'
           >
             <CardItem
-              title={`Card ${card.title}`}
-              description={`Description for Card ${card.description}`}
+              title={card.title}
+              description={card.description}
               barcolor={card.barcolor}
             />
           </Grid>

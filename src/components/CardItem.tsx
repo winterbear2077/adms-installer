@@ -5,7 +5,6 @@ export interface CardItemProps {
   title: string;
   description: string;
   barcolor?: string; // 可选属性，默认使用 primary.main
-  onClick?: () => void; // 可选属性，点击事件处理函数
 }
 
 const CardItem = ({ title, description, barcolor }: CardItemProps) => {
@@ -19,7 +18,7 @@ const CardItem = ({ title, description, barcolor }: CardItemProps) => {
       sx={{
         maxWidth: 450,
         width: '100%',
-        height: '60vh', // 卡片的高度占容器 60-70%，根据屏幕自适应调整
+        height: '60vh', 
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -28,7 +27,7 @@ const CardItem = ({ title, description, barcolor }: CardItemProps) => {
           transform: 'translateY(-10px)', // 鼠标悬停时卡片向上偏移
           boxShadow: '0px 10px 15px rgba(0, 0, 0, 0.2)', // 高亮边框效果
         },
-        cursor: 'pointer', // 如果有点击事件，鼠标悬停时显示为手型
+        cursor: 'pointer', 
       }}
       onClick={onClickHandler} // 点击事件
     >
