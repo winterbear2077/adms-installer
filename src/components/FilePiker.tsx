@@ -9,9 +9,9 @@ const FilePicker = () => {
 
     const handlePickFile = async () => {
         const files = await open({
-            multiple: true,
+            multiple: false,
             filters: [
-                { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif'] },
+                { name: 'Images', extensions: ['svg', 'jpg', 'jpeg', 'gif'] },
                 { name: 'Text', extensions: ['txt', 'md'] }
             ]
         });
@@ -22,24 +22,13 @@ const FilePicker = () => {
         }
     };
 
-    const onDrop = (acceptedFiles: File[]) => {
-        setSelectedFiles(acceptedFiles.map(file => file.name));
-    };
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: {
-            'image/*': ['.png', '.jpg', '.jpeg'], // 限制文件类型
-            'text/*': ['.txt']
-        },
-        maxSize: 5 * 1024 * 1024, // 限制文件大小（5MB）
-    });
+    const { isDragActive } = useDropzone({});
 
     return (
         <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
             {/* 拖拽区域 */}
             <Paper
-                {...getRootProps()}
                 sx={{
                     p: 4,
                     border: '2px dashed',
@@ -52,12 +41,12 @@ const FilePicker = () => {
                     },
                 }}
             >
-                <input {...getInputProps()} />
                 <CloudUpload sx={{ fontSize: 40, color: 'text.secondary' }} />
                 <Typography variant="body1" sx={{ mt: 2 }}>
                     {isDragActive ? 'loose to upload' : 'drag here to upload'}
                 </Typography>
-                <Button variant="contained" sx={{ mt: 2 }}>
+                <Button variant="contained" sx={{ mt: 2 }}
+                    onClick={handlePickFile}>
                     Choose the files
                 </Button>
             </Paper>
