@@ -29,6 +29,8 @@ function SidePage({ steps }: { steps: Array<StepInfo> }) {
         navigate("/");
     }
 
+    const handleFinish = () => { }
+
 
     return (
         <BasicPage>
@@ -87,14 +89,24 @@ function SidePage({ steps }: { steps: Array<StepInfo> }) {
                         >
                             Back
                         </Button>
-                        <Button
-                            onClick={handleNext}
-                            variant="contained"
-                            color="primary"
-                            disabled={activeStep === steps.length}
-                        >
-                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                        </Button>
+                        {
+                            activeStep === steps.length - 1 ? (
+                                <Button
+                                    onClick={handleFinish}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    Finish
+                                </Button>
+                            ) : <Button
+                                onClick={handleNext}
+                                variant="contained"
+                                color="primary"
+                                disabled={activeStep === steps.length - 1}
+                            >
+                                Next
+                            </Button>
+                        }
                     </Box>
                 </Box>
             </Box>

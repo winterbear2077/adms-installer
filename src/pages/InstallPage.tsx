@@ -1,10 +1,23 @@
-import FilePicker from "../components/FilePiker";
+import { Typography } from "@mui/material";
+import FilePicker from "../components/FilePicker";
 import SidePage, { StepInfo } from "../components/SideStepper";
+
+
+const FileComponent = () => {
+    return (
+        <>
+            <Typography>Installation Package</Typography>
+            <FilePicker />
+        </>
+
+    )
+}
+
 
 const steps: StepInfo[] = [
     {
         stepName: "Upload", description: "Upload the installation package", formInfo: [],
-        additionalInput: (<FilePicker />)
+        additionalInput: (<FileComponent />)
     },
     {
         stepName: "Configure",

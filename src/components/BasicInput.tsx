@@ -39,7 +39,7 @@ const BasicInput = ({ inputProps }: { inputProps: BasicInputProps }) => {
     };
 
     return (
-        <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={5}>
             <Typography sx={{ width: '30%' }}>
                 {title}
                 {required && <span style={{ color: 'red' }}>*</span>}
