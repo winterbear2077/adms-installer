@@ -4,29 +4,35 @@ import { Box, Button, Typography, List, ListItem, ListItemText, Paper, ListItemI
 import { useDropzone } from "react-dropzone";
 import { CloudUpload, InsertDriveFile } from "@mui/icons-material";
 
-const FilePicker = () => {
+interface fileFilterProps {
+    name: string,
+    extensions: Array<string>
+}
+
+interface FilePickerProps {
+    onFileSelected: (file: string) => void;
+}
+
+const FilePicker = ({ fileFilters, filePickProps }: { fileFilters: Array<fileFilterProps>, filePickProps: FilePickerProps }) => {
     const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+    const { onFileSelected } = filePickProps;
 
     const handlePickFile = async () => {
-        const files = await open({
+        const file = await open({
             multiple: false,
-            filters: [
-                { name: 'Images', extensions: ['svg', 'jpg', 'jpeg', 'gif'] },
-                { name: 'Text', extensions: ['txt', 'md'] }
-            ]
+            filters: fileFilters
         });
 
-        // `files` 可以是 string 或 string[]
-        if (files) {
-            setSelectedFiles(Array.isArray(files) ? files : [files]);
-        }
+        file && setSelectedFiles([file as string]);
+        onFileSelected(file as string);
+
     };
 
 
     const { isDragActive } = useDropzone({});
 
     return (
-        <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+        <Box sx={{ maxWidth: '80%', mx: 'auto', mt: 4 }}>
             {/* 拖拽区域 */}
             <Paper
                 sx={{

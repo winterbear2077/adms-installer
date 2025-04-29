@@ -1,14 +1,15 @@
-import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import { AppBar, Toolbar, Typography } from "@mui/material";
+import MaterialUISwitch from "./styleSwitch";
 
 
-const InstallNav = () => {
+const InstallNav = ({ welcome }: { welcome?: string }) => {
     return <>
         <AppBar position="sticky">
             <Toolbar>
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    ADMS Installer
+                    {welcome ? welcome : "Welcome to the Installer"}
                 </Typography>
-                <Button color="inherit">登录</Button>
+                <MaterialUISwitch />
             </Toolbar>
         </AppBar>
     </>

@@ -94,6 +94,20 @@ impl Archive {
         }
     }
 
+    pub fn get_file_list(&self) {
+        match self {
+            Archive::Zip => {
+                // Implement logic to get file list from zip archive
+            }
+            Archive::Tar => {
+                // Implement logic to get file list from tar archive
+            }
+            Archive::TGz => {
+                // Implement logic to get file list from tgz archive
+            }
+        }
+    }
+
     fn extract_zip(&self, archive_path: &str, output_path: &str) -> Result<(), ArchiveError> {
         let file = File::open(archive_path)?;
         let mut archive = zip::ZipArchive::new(file).map_err(ExtractionError::ZipError)?;

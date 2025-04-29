@@ -2,9 +2,9 @@ import { Box } from "@mui/material"
 import InstallNav from "./InstallerNav"
 import React from "react"
 
-const BasicPage = ({ children }: { children: React.ReactElement }) => {
+const BasicPage = ({ children, welcome }: { children: React.ReactElement, welcome?: string }) => {
     return (<Box sx={{ height: '100vh', width: '100%', overflow: 'hidden' }}>
-        <InstallNav />
+        <InstallNav welcome={welcome} />
         <Box
             sx={{
                 display: 'flex',

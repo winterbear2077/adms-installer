@@ -1,22 +1,43 @@
 import { Typography } from "@mui/material";
 import FilePicker from "../components/FilePicker";
-import SidePage, { StepInfo } from "../components/SideStepper";
+import PageWithStepper, { StepInfo } from "../components/PageWithStepper";
+import { invoke } from "@tauri-apps/api/core";
+
+const fileFilters = [
+    {
+        name: "Archive Files",
+        extensions: ["tar", "tgz", "zip", "tar.gz"]
+    }
+]
+
+const get_interface = invoke<Promise<string[]>>("get_interfaces");
+// export interface StepInfo {
+//     stepName: string,
+//     description: string,
+//     formInfo: Array<BasicInputProps>,
+//     additionalInput?: React.ReactNode,
+//     handleSubmit?: () => void,
+// }
+
+
+// function SidePage({ steps, handleSubmitAll }: { steps: Array<StepInfo>, handleSubmitAll: () => void }) { }
 
 
 const FileComponent = () => {
     return (
         <>
             <Typography>Installation Package</Typography>
-            <FilePicker />
+            <FilePicker fileFilters={fileFilters} filePickProps={{ onFileSelected: () => { console.log() } }} />
         </>
 
     )
 }
 
-
 const steps: StepInfo[] = [
     {
-        stepName: "Upload", description: "Upload the installation package", formInfo: [],
+        stepName: "Upload", description: "Upload the installation package", formInfo: [
+
+        ],
         additionalInput: (<FileComponent />)
     },
     {
@@ -24,21 +45,28 @@ const steps: StepInfo[] = [
         description: "Configure the installation settings",
         formInfo: [
             {
-                title: "Install Path", type: "text",
-                placeholder: "",
-                required: true
+                name: "hostname",
+                type: "text",
+                title: "Hostname",
+                required: true,
+                defaultValue: "localhost",
+                placeholder: "Enter hostname"
             },
             {
-                title: "Port", type: "number",
-                placeholder: "",
+                name: "username",
+                type: "text",
+                title: "Username",
+                required: true,
+                defaultValue: "admin",
+                placeholder: "Enter username"
             },
             {
-                title: "Username", type: "text",
-                placeholder: "",
-            },
-            {
-                title: "Password", type: "password",
-                placeholder: "",
+                name: "password",
+                type: "password",
+                title: "Password",
+                required: true,
+                defaultValue: "",
+                placeholder: "Enter password"
             }
         ]
     },
@@ -57,20 +85,21 @@ const steps: StepInfo[] = [
         description: "Configure network settings",
         formInfo: [
             {
-                title: "IP Address", type: "text",
-                placeholder: "",
+                name: "ip",
+                type: "text",
+                title: "IP Address",
+                required: true,
+                defaultValue: "",
+                placeholder: ""
             },
             {
-                title: "Subnet Mask", type: "text",
+                name: "interface",
+                type: "text",
+                title: "network interface",
+                required: true,
                 placeholder: "",
-            },
-            {
-                title: "Gateway", type: "text",
-                placeholder: "",
-            },
-            {
-                title: "DNS", type: "text",
-                placeholder: "",
+                select: true,
+                loadOptions: async () => await get_interface,
             }
         ]
     },
@@ -83,7 +112,7 @@ const steps: StepInfo[] = [
 
 const InstallPage = () => {
     return (
-        <SidePage steps={steps} />
+        <PageWithStepper steps={steps} />
     )
 }
 

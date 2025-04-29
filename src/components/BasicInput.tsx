@@ -1,61 +1,94 @@
-import { Box, TextField, Typography } from "@mui/material";
-import { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { Box, MenuItem, TextField, Typography, SelectChangeEvent } from "@mui/material";
+import { Controller } from "react-hook-form";
 
 export interface BasicInputProps {
     title: string;
+    name: string;
     placeholder: string;
     type?: string;
     required?: boolean;
-    error?: boolean;
-    helperText?: string;
-    value?: string; // 受控模式使用
+    defaultValue?: string;
+    select?: boolean;
     onChange?: (value: string) => void;
-    defaultValue?: string; // 非受控模式初始值
+    loadOptions?: () => Promise<string[]>;
 }
 
-const BasicInput = ({ inputProps }: { inputProps: BasicInputProps }) => {
-    const {
-        title,
-        placeholder,
-        type = "text",
-        required,
-        error,
-        helperText,
-        value,
-        onChange,
-        defaultValue = "",
-    } = inputProps;
+const BasicInput = ({ control, inputProps }: {
+    control: any;
+    inputProps: BasicInputProps & { rules?: any };
+}) => {
+    const [options, setOptions] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const isControlled = value !== undefined;
-    const [innerValue, setInnerValue] = useState(defaultValue);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        if (isControlled) {
-            onChange?.(newValue);
-        } else {
-            setInnerValue(newValue);
+    // 处理异步加载选项
+    useEffect(() => {
+        if (inputProps.select && inputProps.loadOptions) {
+            setIsLoading(true);
+            inputProps.loadOptions()
+                .then(opts => {
+                    setOptions(opts);
+                    setIsLoading(false);
+                })
+                .catch(() => setIsLoading(false));
         }
-    };
+    }, [inputProps.select, inputProps.loadOptions]);
 
     return (
-        <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={5}>
-            <Typography sx={{ width: '30%' }}>
-                {title}
-                {required && <span style={{ color: 'red' }}>*</span>}
-            </Typography>
-            <TextField
-                variant="standard"
-                placeholder={placeholder}
-                sx={{ marginBottom: 2, width: '60%' }}
-                type={type}
-                required={required}
-                error={error}
-                helperText={helperText}
-                value={isControlled ? value : innerValue}
-                onChange={handleChange}
-            />
-        </Box>
+        <Controller
+            name={inputProps.name}
+            control={control}
+            defaultValue={inputProps.defaultValue || ''}
+            rules={{ required: inputProps.required }}
+            render={({ field, fieldState: { error } }) => {
+                // 统一处理变化事件
+                const handleChange = (event: SelectChangeEvent<unknown> | React.ChangeEvent<HTMLInputElement>) => {
+                    const value = event.target.value as string;
+
+                    // 优先执行自定义回调
+                    if (inputProps.onChange) {
+                        inputProps.onChange(value);
+                    }
+
+                    // 更新表单状态
+                    field.onChange(event);
+                };
+
+                return (
+                    <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={2}>
+                        <Typography sx={{ width: '30%' }}>
+                            {inputProps.title}
+                            {inputProps.required && <span style={{ color: 'red' }}>*</span>}
+                        </Typography>
+
+                        <TextField
+                            {...field}
+                            select={inputProps.select}
+                            variant="standard"
+                            placeholder={inputProps.placeholder}
+                            sx={{ marginBottom: 2, width: '60%' }}
+                            type={inputProps.type || 'text'}
+                            error={!!error}
+                            helperText={error?.message}
+                            onChange={handleChange as React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>} // 统一使用自定义处理器
+                            disabled={isLoading || !inputProps.select} // 更合理的禁用逻辑
+                        >
+                            {/* 下拉模式时的选项 */}
+                            {inputProps.select && [
+                                <MenuItem key="placeholder" value="" disabled>
+                                    {inputProps.placeholder}
+                                </MenuItem>,
+                                ...options.map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                        {option}
+                                    </MenuItem>
+                                ))
+                            ]}
+                        </TextField>
+                    </Box>
+                );
+            }}
+        />
     );
 };
 
