@@ -12,14 +12,15 @@ export interface BasicInputProps {
     select?: boolean;
     onChange?: (value: string) => void;
     loadOptions?: () => Promise<string[]>;
+    rules?: any;
 }
 
 const BasicInput = ({ control, inputProps }: {
     control: any;
-    inputProps: BasicInputProps & { rules?: any };
+    inputProps: BasicInputProps;
 }) => {
     const [options, setOptions] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [_, setIsLoading] = useState(false);
 
     // 处理异步加载选项
     useEffect(() => {
@@ -39,7 +40,7 @@ const BasicInput = ({ control, inputProps }: {
             name={inputProps.name}
             control={control}
             defaultValue={inputProps.defaultValue || ''}
-            rules={{ required: inputProps.required }}
+            rules={{ required: inputProps.required ? `${inputProps.title} is required` : false, ...inputProps.rules }}
             render={({ field, fieldState: { error } }) => {
                 // 统一处理变化事件
                 const handleChange = (event: SelectChangeEvent<unknown> | React.ChangeEvent<HTMLInputElement>) => {
@@ -66,12 +67,13 @@ const BasicInput = ({ control, inputProps }: {
                             select={inputProps.select}
                             variant="standard"
                             placeholder={inputProps.placeholder}
+                            value={field.value ?? ''}
                             sx={{ marginBottom: 2, width: '60%' }}
                             type={inputProps.type || 'text'}
                             error={!!error}
                             helperText={error?.message}
                             onChange={handleChange as React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>} // 统一使用自定义处理器
-                            disabled={isLoading || !inputProps.select} // 更合理的禁用逻辑
+                            required={inputProps.required}
                         >
                             {/* 下拉模式时的选项 */}
                             {inputProps.select && [

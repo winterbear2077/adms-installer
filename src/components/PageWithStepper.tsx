@@ -18,8 +18,15 @@ export interface StepInfo {
 const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
 
     const [activeStep, setActiveStep] = useState(0);
-    const onNext = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
-
+    const onNext = (_event: any) => setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const onSubmit = (data: any) => {
+        if (activeStep === steps.length - 1) {
+            // Handle final submission
+            console.log("Final submission");
+        } else {
+            onNext(data);
+        }
+    }
 
     const onBack = () => setActiveStep((prevActiveStep) => Math.max(0, prevActiveStep - 1));
 
@@ -40,8 +47,9 @@ const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
                     <StepDescription steps={steps} activeStep={activeStep} />
 
                     <BasicForm
+                        key={activeStep}
                         formInfo={steps[activeStep].formInfo}
-                        onNext={onNext}
+                        onNext={onSubmit}
                         onBack={onBack}
                         isLastStep={activeStep === steps.length - 1}
                         currentStep={activeStep}

@@ -25,76 +25,75 @@ const BasicForm = ({
     additionalInput,
 }: BasicFormProps) => {
     const { control, handleSubmit, reset } = useForm({
-        defaultValues: initialValues
+        mode: 'onBlur',
     });
 
-    useEffect(() => {
-        reset(initialValues);
-    }, [initialValues, reset]);
+    // useEffect(() => {
+    //     reset(initialValues);
+    // }, [initialValues, reset]);
 
     const navigate = useNavigate();
     const handleCancel = () => {
         navigate("/");
     }
 
+    const onSubmit = (data: any) => { onNext(data); };
+
     return (
-        <form onSubmit={handleSubmit(onNext)}>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+            {/* form part*/}
+            <Box sx={{
+                flex: 1,
+                overflowY: 'auto',
+                marginBottom: 2,
+                marginRight: 8,
+                height: "40vh"
+            }}>
+                <Card sx={{ padding: 2, marginBottom: 2 }}
+                    elevation={0}>
+                    {formInfo.map((props) => (
+                        <>
+                            <BasicInput
+                                key={props.name}
+                                control={control}
+                                inputProps={props}
+                            />
+                        </>
+                    ))}
+                    {additionalInput}
+                </Card>
+            </Box>
+            <Divider sx={{
+                marginBottom: 4
+            }} />
+            {/* button*/}
             <Box>
-                {/* form part*/}
-                <Box sx={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    marginBottom: 2,
-                    marginRight: 8,
-                    height: "40vh"
-                }}>
-                    <Card sx={{ padding: 2, marginBottom: 2 }}
-                        elevation={0}>
-                        {formInfo.map((props) => (
-                            <>
-                                <BasicInput
-                                    key={props.name}
-                                    control={control}
-                                    inputProps={props}
-                                />
-                            </>
-                        ))}
-                        {additionalInput}
-                    </Card>
-                </Box>
-                <Divider sx={{
-                    marginBottom: 4
-                }} />
-                {/* button*/}
-                <Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'right', gap: 2 }}>
-                        <Button
-                            onClick={handleCancel}
-                            color="primary"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={currentStep === 0}
-                            onClick={onBack}
-                            variant="outlined"
-                            color="primary"
-                        >
-                            Back
-                        </Button>
+                <Box sx={{ display: 'flex', justifyContent: 'right', gap: 2 }}>
+                    <Button
+                        onClick={handleCancel}
+                        color="primary"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        disabled={currentStep === 0}
+                        onClick={onBack}
+                        variant="outlined"
+                        color="primary"
+                    >
+                        Back
+                    </Button>
 
-                        <Button
-                            onClick={onNext}
-                            variant="contained"
-                            color="primary"
-                        >
-                            {isLastStep ? 'Finish' : 'Next'}
-                        </Button>
-
-                    </Box>
+                    <Button
+                        type='submit'
+                        variant="contained"
+                        color="primary"
+                    >
+                        {isLastStep ? 'Finish' : 'Next'}
+                    </Button>
                 </Box>
             </Box>
-        </form>
+        </Box>
     );
 };
 
