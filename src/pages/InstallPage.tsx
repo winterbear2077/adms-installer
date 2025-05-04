@@ -23,10 +23,10 @@ const get_interface = invoke<Promise<string[]>>("get_interfaces");
 // function SidePage({ steps, handleSubmitAll }: { steps: Array<StepInfo>, handleSubmitAll: () => void }) { }
 
 
-const FileComponent = () => {
+const FileComponent = ({ name }: { name: string }) => {
     return (
         <>
-            <Typography>Installation Package</Typography>
+            <Typography>{name}</Typography>
             <FilePicker fileFilters={fileFilters} filePickProps={{ onFileSelected: () => { console.log() } }} />
         </>
 
@@ -38,11 +38,11 @@ const steps: StepInfo[] = [
         stepName: "Upload", description: "Upload the installation package", formInfo: [
 
         ],
-        additionalInput: (<FileComponent />)
+        additionalInput: (<FileComponent name="Installation Package" />)
     },
     {
         stepName: "Configure",
-        description: "Configure the installation settings",
+        description: "Configure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settingsConfigure the installation settings",
         formInfo: [
             {
                 name: "hostname",
@@ -50,7 +50,8 @@ const steps: StepInfo[] = [
                 title: "Hostname",
                 required: true,
                 defaultValue: "localhost",
-                placeholder: "Enter hostname"
+                placeholder: "Enter hostname",
+
             },
             {
                 name: "username",
@@ -90,7 +91,13 @@ const steps: StepInfo[] = [
                 title: "IP Address",
                 required: true,
                 defaultValue: "",
-                placeholder: ""
+                placeholder: "",
+                rules: {
+                    pattern: {
+                        value: /^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])){3}$/,
+                        message: "Invalid hostname format"
+                    }
+                }
             },
             {
                 name: "interface",
@@ -98,8 +105,13 @@ const steps: StepInfo[] = [
                 title: "network interface",
                 required: true,
                 placeholder: "",
-                select: true,
-                loadOptions: async () => await get_interface,
+                select: {
+                    enable: true,
+                    options: [],
+                    loadOptions: async () => await get_interface,
+                    multiple: true,
+                },
+
             }
         ]
     },

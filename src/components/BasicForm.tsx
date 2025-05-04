@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface BasicFormProps {
     formInfo: BasicInputProps[];
-    initialValues?: Record<string, any>;
+    updateValues?: (r: Record<string, any>) => void;
     onNext: SubmitHandler<any>;
     onBack?: () => void;
     isLastStep?: boolean;
@@ -17,14 +17,14 @@ interface BasicFormProps {
 
 const BasicForm = ({
     formInfo,
-    initialValues,
+    updateValues,
     onNext,
     onBack,
     isLastStep = false,
     currentStep = 0,
     additionalInput,
 }: BasicFormProps) => {
-    const { control, handleSubmit, reset } = useForm({
+    const { control, handleSubmit } = useForm({
         mode: 'onBlur',
     });
 
@@ -37,7 +37,7 @@ const BasicForm = ({
         navigate("/");
     }
 
-    const onSubmit = (data: any) => { onNext(data); };
+    const onSubmit = (data: any) => { updateValues?.(data); onNext(data); };
 
     return (
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>

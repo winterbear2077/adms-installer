@@ -30,7 +30,12 @@ const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
 
     const onBack = () => setActiveStep((prevActiveStep) => Math.max(0, prevActiveStep - 1));
 
+    const [values, setValues] = useState<Record<string, any>>({});
 
+    const updateValues = (data: Record<string, any>) => {
+        setValues((prevValues) => ({ ...prevValues, ...data }));
+        console.log("Updated values:", { ...values, ...data });
+    }
 
     return (
         <BasicPage welcome={
@@ -43,17 +48,22 @@ const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
                 </Box>
 
 
-                <Box sx={{ width: '70%', height: '80%', display: 'flex', justifyContent: 'top', flexDirection: 'column' }}>
+                <Box sx={{ width: '70%', height: '80%', display: 'flex', justifyContent: 'flex-start', flexDirection: 'column' }}>
                     <StepDescription steps={steps} activeStep={activeStep} />
 
-                    <BasicForm
-                        key={activeStep}
-                        formInfo={steps[activeStep].formInfo}
-                        onNext={onSubmit}
-                        onBack={onBack}
-                        isLastStep={activeStep === steps.length - 1}
-                        currentStep={activeStep}
-                        additionalInput={steps[activeStep].additionalInput} />
+                    <Box>
+                        <BasicForm
+                            key={activeStep}
+                            formInfo={steps[activeStep].formInfo}
+                            onNext={onSubmit}
+                            onBack={onBack}
+                            isLastStep={activeStep === steps.length - 1}
+                            currentStep={activeStep}
+                            additionalInput={steps[activeStep].additionalInput}
+                            updateValues={updateValues}
+                        />
+                    </Box>
+
                 </Box>
             </Box>
         </BasicPage >

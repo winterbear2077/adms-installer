@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "adms-installer",
-        "height": 900,
-        "width": 1350
+        "minHeight": 900,
+        "minWidth": 1200
       }
     ],
     "security": {

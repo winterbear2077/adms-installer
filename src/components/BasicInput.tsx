@@ -2,17 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Box, MenuItem, TextField, Typography, SelectChangeEvent } from "@mui/material";
 import { Controller } from "react-hook-form";
 
+
+interface SelectProps {
+    enable: boolean;
+    multiple: boolean;
+    options: string[];
+    loadOptions?: () => Promise<string[]>;
+}
 export interface BasicInputProps {
     title: string;
     name: string;
     placeholder: string;
     type?: string;
     required?: boolean;
-    defaultValue?: string;
-    select?: boolean;
-    onChange?: (value: string) => void;
-    loadOptions?: () => Promise<string[]>;
+    defaultValue?: string | string[];
     rules?: any;
+    select?: SelectProps;
 }
 
 const BasicInput = ({ control, inputProps }: {
@@ -22,38 +27,27 @@ const BasicInput = ({ control, inputProps }: {
     const [options, setOptions] = useState<string[]>([]);
     const [_, setIsLoading] = useState(false);
 
+    const { select } = inputProps;
     // 处理异步加载选项
     useEffect(() => {
-        if (inputProps.select && inputProps.loadOptions) {
+        if (select?.enable && select.loadOptions) {
             setIsLoading(true);
-            inputProps.loadOptions()
+            select.loadOptions()
                 .then(opts => {
                     setOptions(opts);
                     setIsLoading(false);
                 })
                 .catch(() => setIsLoading(false));
         }
-    }, [inputProps.select, inputProps.loadOptions]);
+    }, [select?.enable, select?.loadOptions]);
 
     return (
         <Controller
             name={inputProps.name}
             control={control}
-            defaultValue={inputProps.defaultValue || ''}
+            defaultValue={inputProps.defaultValue || []}
             rules={{ required: inputProps.required ? `${inputProps.title} is required` : false, ...inputProps.rules }}
             render={({ field, fieldState: { error } }) => {
-                // 统一处理变化事件
-                const handleChange = (event: SelectChangeEvent<unknown> | React.ChangeEvent<HTMLInputElement>) => {
-                    const value = event.target.value as string;
-
-                    // 优先执行自定义回调
-                    if (inputProps.onChange) {
-                        inputProps.onChange(value);
-                    }
-
-                    // 更新表单状态
-                    field.onChange(event);
-                };
 
                 return (
                     <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={2}>
@@ -64,19 +58,18 @@ const BasicInput = ({ control, inputProps }: {
 
                         <TextField
                             {...field}
-                            select={inputProps.select}
+                            select={select?.enable}
                             variant="standard"
                             placeholder={inputProps.placeholder}
-                            value={field.value ?? ''}
                             sx={{ marginBottom: 2, width: '60%' }}
                             type={inputProps.type || 'text'}
                             error={!!error}
                             helperText={error?.message}
-                            onChange={handleChange as React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>} // 统一使用自定义处理器
                             required={inputProps.required}
+                            slotProps={{ select: { multiple: select?.multiple } }} // 传递 slotProps
                         >
                             {/* 下拉模式时的选项 */}
-                            {inputProps.select && [
+                            {select?.enable && [
                                 <MenuItem key="placeholder" value="" disabled>
                                     {inputProps.placeholder}
                                 </MenuItem>,
@@ -87,7 +80,7 @@ const BasicInput = ({ control, inputProps }: {
                                 ))
                             ]}
                         </TextField>
-                    </Box>
+                    </Box >
                 );
             }}
         />
