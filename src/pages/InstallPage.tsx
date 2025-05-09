@@ -69,7 +69,7 @@ const steps: StepInfo[] = [
                 defaultValue: "",
                 placeholder: "Enter password"
             }
-        ]
+        ],
     },
     {
         stepName: "Install",
@@ -112,8 +112,9 @@ const steps: StepInfo[] = [
                     multiple: true,
                 },
 
-            }
-        ]
+            },
+        ],
+        multiple: true,
     },
     {
         stepName: "Ready to complete stage 1",

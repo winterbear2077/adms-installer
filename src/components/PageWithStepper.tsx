@@ -11,6 +11,7 @@ export interface StepInfo {
     stepName: string,
     description: string,
     formInfo: Array<BasicInputProps>,
+    multiple?: boolean,
     additionalInput?: React.ReactNode,
     handleSubmit?: () => void,
 }
@@ -22,7 +23,7 @@ const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
     const onSubmit = (data: any) => {
         if (activeStep === steps.length - 1) {
             // Handle final submission
-            console.log("Final submission");
+            console.log("Final values:", values);
         } else {
             onNext(data);
         }
@@ -34,7 +35,6 @@ const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
 
     const updateValues = (data: Record<string, any>) => {
         setValues((prevValues) => ({ ...prevValues, ...data }));
-        console.log("Updated values:", { ...values, ...data });
     }
 
     return (
@@ -54,7 +54,9 @@ const PageWithStepper = ({ steps }: { steps: Array<StepInfo> }) => {
                     <Box>
                         <BasicForm
                             key={activeStep}
+                            formName={steps[activeStep].stepName}
                             formInfo={steps[activeStep].formInfo}
+                            multiple={steps[activeStep].multiple}
                             onNext={onSubmit}
                             onBack={onBack}
                             isLastStep={activeStep === steps.length - 1}
