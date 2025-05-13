@@ -1,5 +1,3 @@
-import { Typography } from "@mui/material";
-import FilePicker from "../components/FilePicker";
 import PageWithStepper, { StepInfo } from "../components/PageWithStepper";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -23,22 +21,18 @@ const get_interface = invoke<Promise<string[]>>("get_interfaces");
 // function SidePage({ steps, handleSubmitAll }: { steps: Array<StepInfo>, handleSubmitAll: () => void }) { }
 
 
-const FileComponent = ({ name }: { name: string }) => {
-    return (
-        <>
-            <Typography>{name}</Typography>
-            <FilePicker fileFilters={fileFilters} filePickProps={{ onFileSelected: () => { console.log() } }} />
-        </>
-
-    )
-}
-
 const steps: StepInfo[] = [
     {
-        stepName: "Upload", description: "Upload the installation package", formInfo: [
+        stepName: "Upload", description: "Upload the installation package", formInfo: [{
+            name: "admsPackages",
+            type: "file",
+            title: "Installation Package",
+            required: true,
+            defaultValue: "",
+            placeholder: "Select installation package",
+        }
 
         ],
-        additionalInput: (<FileComponent name="Installation Package" />)
     },
     {
         stepName: "Configure",

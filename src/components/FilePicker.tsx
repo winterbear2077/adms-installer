@@ -1,81 +1,65 @@
 import { useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { Box, Button, Typography, List, ListItem, ListItemText, Paper, ListItemIcon } from "@mui/material";
-import { useDropzone } from "react-dropzone";
-import { CloudUpload, InsertDriveFile } from "@mui/icons-material";
-
-interface fileFilterProps {
-    name: string,
-    extensions: Array<string>
-}
-
+import { Box, Button, TextField } from "@mui/material";
 interface FilePickerProps {
-    onFileSelected: (file: string) => void;
+    value: string;
+    fileFilter?: Record<string, any>;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: () => void;
 }
 
-const FilePicker = ({ fileFilters, filePickProps }: { fileFilters: Array<fileFilterProps>, filePickProps: FilePickerProps }) => {
-    const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
-    const { onFileSelected } = filePickProps;
+const FilePicker = ({ value, onChange, onBlur, fileFilter }: FilePickerProps) => {
+    const [selectedFile, setSelectedFile] = useState<string>(value);
 
+    // Handle file selection
     const handlePickFile = async () => {
-        const file = await open({
-            multiple: false,
-            filters: fileFilters
-        });
+        const file = await open(fileFilter);
+        if (file) {
+            setSelectedFile(file as string);
+            onChange({ target: { value: file as string } } as React.ChangeEvent<HTMLInputElement>);
+        }
+    };
 
-        file && setSelectedFiles([file as string]);
-        onFileSelected(file as string);
-
+    // Clear the selected file
+    const handleClearFile = () => {
+        setSelectedFile('');
+        onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
     };
 
 
-    const { isDragActive } = useDropzone({});
+    // Handle manual input of the file path
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedFile(event.target.value);
+        onChange(event);
+    };
 
     return (
-        <Box sx={{ maxWidth: '80%', mx: 'auto', mt: 4 }}>
-            {/* 拖拽区域 */}
-            <Paper
-                sx={{
-                    p: 4,
-                    border: '2px dashed',
-                    borderColor: isDragActive ? 'primary.main' : 'divider',
-                    backgroundColor: isDragActive ? 'action.hover' : 'background.paper',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    '&:hover': {
-                        borderColor: 'primary.main',
-                    },
-                }}
-            >
-                <CloudUpload sx={{ fontSize: 40, color: 'text.secondary' }} />
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                    {isDragActive ? 'loose to upload' : 'drag here to upload'}
-                </Typography>
-                <Button variant="contained" sx={{ mt: 2 }}
-                    onClick={handlePickFile}>
-                    Choose the files
+        <Box sx={{ maxWidth: '80%', mx: '0', mt: 4 }}>
+            <Box display="flex" flexDirection="row" gap={1} justifyContent="flex-end" alignItems="center">
+                <TextField
+                    label="file path"
+                    variant="outlined"
+                    fullWidth
+                    value={selectedFile}
+                    onChange={handleChange}
+                    onBlur={onBlur}
+                    size="small"
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handlePickFile}
+                >
+                    select
                 </Button>
-            </Paper>
-
-            {/* 已选文件列表 */}
-            {selectedFiles.length > 0 && (
-                <Paper sx={{ mt: 2, p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                        chosen files
-                    </Typography>
-                    <List>
-                        {selectedFiles.map((file, index) => (
-                            <ListItem key={index}>
-                                <ListItemIcon>
-                                    <InsertDriveFile />
-                                </ListItemIcon>
-                                <ListItemText primary={file} secondary="File description"
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Paper>
-            )}
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleClearFile}
+                >
+                    clear
+                </Button>
+            </Box>
         </Box>
     );
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Box, MenuItem, TextField, Typography } from "@mui/material";
 import { Controller } from "react-hook-form";
+import FilePicker from './FilePicker';
 
 
 interface SelectProps {
@@ -10,6 +11,7 @@ interface SelectProps {
     loadOptions?: () => Promise<string[]>;
 }
 export interface BasicInputProps {
+    onFileSelected?: (file: string) => void;
     title: string;
     name: string;
     placeholder: string;
@@ -48,7 +50,24 @@ const BasicInput = ({ control, inputProps }: {
             defaultValue={inputProps.defaultValue || []}
             rules={{ required: inputProps.required ? `${inputProps.title} is required` : false, ...inputProps.rules }}
             render={({ field, fieldState: { error } }) => {
+                if (inputProps.type === "file") {
+                    return (
+                        <Box display="flex" flexDirection="column" marginTop={2}>
+                            <Typography>
+                                {inputProps.title}
+                                {inputProps.required && <span style={{ color: 'red' }}>*</span>}
+                            </Typography>
+                            {/* 渲染 FilePicker */}
+                            <FilePicker
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                            >
 
+                            </FilePicker>
+                        </Box>
+                    );
+                }
                 return (
                     <Box display="flex" justifyContent="space-between" alignItems="center" marginTop={2}>
                         <Typography sx={{ width: '30%' }}>
