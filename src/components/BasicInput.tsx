@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, MenuItem, TextField, Typography } from "@mui/material";
+import { Box, MenuItem, TextField, Typography, Checkbox, FormControlLabel } from "@mui/material";
 import { Controller } from "react-hook-form";
 import FilePicker from './FilePicker';
 
@@ -20,6 +20,13 @@ export interface BasicInputProps {
     defaultValue?: string | string[];
     rules?: any;
     select?: SelectProps;
+    filePickerProps?: {
+        fileFilter?: {
+            name: string;
+            extensions: string[];
+        }[];
+        multiple?: boolean;
+    };
 }
 
 const BasicInput = ({ control, inputProps }: {
@@ -28,6 +35,8 @@ const BasicInput = ({ control, inputProps }: {
 }) => {
     const [options, setOptions] = useState<string[]>([]);
     const [_, setIsLoading] = useState(false);
+    // Initialize checkbox state based on required property
+    const [showFilePicker, setShowFilePicker] = useState<boolean>(inputProps.required || false);
 
     const { select } = inputProps;
     // 处理异步加载选项
@@ -43,6 +52,14 @@ const BasicInput = ({ control, inputProps }: {
         }
     }, [select?.enable, select?.loadOptions]);
 
+    // Handle checkbox change for file picker
+    const handleFilePickerCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // Only allow changes if the field is not required
+        if (!inputProps.required) {
+            setShowFilePicker(event.target.checked);
+        }
+    };
+
     return (
         <Controller
             name={inputProps.name}
@@ -53,18 +70,39 @@ const BasicInput = ({ control, inputProps }: {
                 if (inputProps.type === "file") {
                     return (
                         <Box display="flex" flexDirection="column" marginTop={2}>
-                            <Typography>
-                                {inputProps.title}
-                                {inputProps.required && <span style={{ color: 'red' }}>*</span>}
-                            </Typography>
+                            <Box display="flex" alignItems="center">
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox 
+                                            checked={inputProps.required || showFilePicker}
+                                            onChange={handleFilePickerCheckboxChange}
+                                            color="primary"
+                                            disabled={inputProps.required}
+                                        />
+                                    }
+                                    label={
+                                        <span>
+                                            {inputProps.title}
+                                            {inputProps.required && <span style={{ color: 'red' }}>*</span>}
+                                        </span>
+                                    }
+                                />
+                            </Box>
                             {/* 渲染 FilePicker */}
-                            <FilePicker
-                                value={field.value}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                            >
-
-                            </FilePicker>
+                            {(inputProps.required || showFilePicker) && (
+                                <FilePicker
+                                    value={field.value}
+                                    onChange={(e) => {
+                                        field.onChange(e);
+                                        if (!showFilePicker && !inputProps.required) {
+                                            field.onChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
+                                        }
+                                    }}
+                                    onBlur={field.onBlur}
+                                    fileFilter={inputProps.filePickerProps?.fileFilter}
+                                    multiple={inputProps.filePickerProps?.multiple}
+                                />
+                            )}
                         </Box>
                     );
                 }

@@ -30,6 +30,21 @@ const steps: StepInfo[] = [
             required: true,
             defaultValue: "",
             placeholder: "Select installation package",
+            filePickerProps: {
+                fileFilter: fileFilters,
+                multiple: false
+            }
+        },{
+            name: "oraclePackages",
+            type: "file",
+            title: "Oracle Package",
+            required: false,
+            defaultValue: "",
+            placeholder: "Select oracle package",
+            filePickerProps: {
+                fileFilter: fileFilters,
+                multiple: false
+            }
         }
 
         ],
